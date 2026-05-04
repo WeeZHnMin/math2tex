@@ -35,3 +35,6 @@ prompts.json
 # Inno Setup output
 installer/
 publish/
+
+# Portable build output
+portable/
