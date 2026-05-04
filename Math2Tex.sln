@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Math2Tex", "Math2Tex.csproj", "{797A96BD-7E11-D9FF-9234-232A9FAD7F1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{797A96BD-7E11-D9FF-9234-232A9FAD7F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{797A96BD-7E11-D9FF-9234-232A9FAD7F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{797A96BD-7E11-D9FF-9234-232A9FAD7F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{797A96BD-7E11-D9FF-9234-232A9FAD7F1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FE849AC-938B-40F0-B097-CE6684B53411}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,529 @@
+<ui:FluentWindow x:Class="Math2Tex.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="Math2Tex"
+        Width="440"
+        Height="600"
+        MinWidth="400"
+        MinHeight="520"
+        WindowBackdropType="Mica"
+        ExtendsContentIntoTitleBar="True"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable, Microsoft YaHei UI, Segoe UI"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        StateChanged="Window_StateChanged"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <LinearGradientBrush x:Key="HeroBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#6366F1" Offset="0"/>
+            <GradientStop Color="#8B5CF6" Offset="0.5"/>
+            <GradientStop Color="#EC4899" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="CardShadow" TargetType="Border">
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="18"
+                                      ShadowDepth="2"
+                                      Direction="270"
+                                      Color="#22000000"
+                                      Opacity="0.4"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StatusDot" TargetType="Border">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+        </Style>
+
+        <Style x:Key="IconButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="MinHeight" Value="32"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Math2Tex">
+            <ui:TitleBar.Icon>
+                <ui:ImageIcon Source="pack://application:,,,/logo.png"/>
+            </ui:TitleBar.Icon>
+        </ui:TitleBar>
+
+        <!-- ============ HERO ============ -->
+        <Border Grid.Row="1"
+                Margin="14,4,14,8"
+                CornerRadius="14"
+                Background="{StaticResource HeroBrush}"
+                Style="{StaticResource CardShadow}"
+                Padding="16,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Width="40" Height="40"
+                        CornerRadius="10"
+                        Background="#33FFFFFF"
+                        VerticalAlignment="Center"
+                        IsHitTestVisible="False">
+                    <ui:SymbolIcon Symbol="ClipboardPaste24"
+                                   FontSize="20"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            Margin="12,0,12,0"
+                            VerticalAlignment="Center"
+                            IsHitTestVisible="False">
+                    <ui:TextBlock Text="自动转换"
+                                  Foreground="White"
+                                  FontTypography="BodyStrong"
+                                  FontSize="15"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                        <Border x:Name="StatusDot" Style="{StaticResource StatusDot}" Background="#10B981"/>
+                        <ui:TextBlock x:Name="HeroStatusText"
+                                      Text="待命"
+                                      Foreground="#F0FFFFFF"
+                                      FontTypography="Caption"
+                                      VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <ui:ToggleSwitch x:Name="AutoConvertSwitch"
+                                 Grid.Column="2"
+                                 IsChecked="True"
+                                 Width="44"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Center"
+                                 ToolTip="自动转换开关"
+                                 Checked="AutoConvert_Changed"
+                                 Unchecked="AutoConvert_Changed"/>
+            </Grid>
+        </Border>
+
+        <!-- ============ TABS ============ -->
+        <TabControl Grid.Row="2"
+                    Margin="0"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+            <!-- HISTORY -->
+            <TabItem Header="历史">
+                <Grid Margin="14,4,14,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox x:Name="HistorySearchBox"
+                                    PlaceholderText="搜索历史…"
+                                    PlaceholderEnabled="True"
+                                    Icon="{ui:SymbolIcon Search24}"
+                                    IconPlacement="Left"
+                                    TextChanged="HistorySearch_Changed"/>
+                        <ui:TextBlock Grid.Column="1"
+                                      x:Name="HistorySubtitle"
+                                      Text="0 条"
+                                      Appearance="Tertiary"
+                                      FontTypography="Caption"
+                                      VerticalAlignment="Center"
+                                      Margin="10,0,8,0"/>
+                        <ui:Button Grid.Column="2"
+                                   Style="{StaticResource IconButton}"
+                                   Appearance="Secondary"
+                                   Click="HistoryClear_Click"
+                                   ToolTip="清空全部历史">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="DeleteDismiss24"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            Margin="0,10,0,0"
+                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Style="{StaticResource CardShadow}">
+                        <Grid>
+                            <ListBox x:Name="HistoryList"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Padding="6"
+                                     VirtualizingPanel.IsVirtualizing="True"
+                                     VirtualizingPanel.VirtualizationMode="Recycling"
+                                     VirtualizingPanel.ScrollUnit="Pixel"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.PanningMode="VerticalOnly"
+                                     SelectionChanged="HistoryList_SelectionChanged">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                        <Setter Property="Margin" Value="0,2"/>
+                                        <Setter Property="Padding" Value="10,8"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <ui:TextBlock Text="{Binding Title}"
+                                                              FontTypography="BodyStrong"
+                                                              FontSize="12"
+                                                              TextTrimming="CharacterEllipsis"
+                                                              TextWrapping="NoWrap"/>
+                                                <ui:TextBlock Text="{Binding LatexPreview}"
+                                                              Appearance="Secondary"
+                                                              FontTypography="Caption"
+                                                              FontFamily="Cascadia Code, Consolas"
+                                                              TextTrimming="CharacterEllipsis"
+                                                              TextWrapping="NoWrap"/>
+                                            </StackPanel>
+                                            <ui:TextBlock Grid.Column="1"
+                                                          Text="{Binding Subtitle}"
+                                                          Appearance="Tertiary"
+                                                          FontTypography="Caption"
+                                                          VerticalAlignment="Center"
+                                                          Margin="6,0,0,0"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel x:Name="HistoryEmptyState"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        IsHitTestVisible="False"
+                                        Visibility="Collapsed">
+                                <Border Width="56" Height="56"
+                                        CornerRadius="28"
+                                        Background="{DynamicResource SubtleFillColorTertiaryBrush}"
+                                        HorizontalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="DocumentTextClock24"
+                                                   FontSize="26"
+                                                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                </Border>
+                                <ui:TextBlock Text="还没有任何记录"
+                                              Appearance="Secondary"
+                                              FontTypography="BodyStrong"
+                                              Margin="0,10,0,0"
+                                              HorizontalAlignment="Center"/>
+                                <ui:TextBlock Text="复制公式后会自动转换"
+                                              Appearance="Tertiary"
+                                              FontTypography="Caption"
+                                              Margin="0,2,0,0"
+                                              HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ui:TextBox Grid.Row="2"
+                                x:Name="HistoryDetailBox"
+                                Margin="0,8,0,0"
+                                Height="64"
+                                FontFamily="Cascadia Code, Consolas"
+                                FontSize="12"
+                                IsReadOnly="True"
+                                TextWrapping="Wrap"
+                                VerticalScrollBarVisibility="Auto"
+                                PlaceholderText="选择一条记录查看 LaTeX"
+                                PlaceholderEnabled="True"/>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                        <ui:Button Style="{StaticResource IconButton}"
+                                   Appearance="Secondary"
+                                   Click="HistoryCopy_Click"
+                                   ToolTip="复制选中条目的 LaTeX"
+                                   Margin="0,0,6,0">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="Copy24"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                        <ui:Button Style="{StaticResource IconButton}"
+                                   Appearance="Caution"
+                                   Click="HistoryDelete_Click"
+                                   ToolTip="删除选中条目">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="Delete24"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- SETTINGS -->
+            <TabItem Header="设置">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0">
+                    <StackPanel Margin="14,4,14,16">
+                        <ui:CardControl Margin="0,0,0,8">
+                            <ui:CardControl.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="API Base URL" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="OpenAI 兼容端点"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardControl.Header>
+                            <ui:TextBox x:Name="BaseUrlBox" Width="200"/>
+                        </ui:CardControl>
+
+                        <ui:CardControl Margin="0,0,0,8">
+                            <ui:CardControl.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="模型" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="model 字段值"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardControl.Header>
+                            <ui:TextBox x:Name="ModelBox" Width="200"/>
+                        </ui:CardControl>
+
+                        <ui:CardControl Margin="0,0,0,8">
+                            <ui:CardControl.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="API Key" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="作为 Bearer 发送，明文存盘"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardControl.Header>
+                            <ui:PasswordBox x:Name="ApiKeyBox"
+                                            Width="200"
+                                            PasswordChanged="ApiKeyBox_PasswordChanged"/>
+                        </ui:CardControl>
+
+                        <ui:InfoBar x:Name="AuthInfoBar"
+                                    Margin="0,0,0,8"
+                                    Title="未配置 API Key"
+                                    Severity="Warning"
+                                    IsClosable="False"
+                                    IsOpen="True"/>
+
+                        <ui:CardControl Margin="0,0,0,8">
+                            <ui:CardControl.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="窗口切换热键" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="按下组合键设置 · Esc 取消"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardControl.Header>
+                            <ui:TextBox x:Name="HotkeyBox"
+                                        Width="160"
+                                        IsReadOnly="True"
+                                        FontFamily="Cascadia Code, Consolas"
+                                        PlaceholderText="未设置"
+                                        PlaceholderEnabled="True"
+                                        PreviewKeyDown="HotkeyBox_PreviewKeyDown"
+                                        GotFocus="HotkeyBox_GotFocus"
+                                        LostFocus="HotkeyBox_LostFocus"/>
+                        </ui:CardControl>
+
+                        <ui:CardControl Margin="0,0,0,8">
+                            <ui:CardControl.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="自动转换长度上限" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="超出此长度的剪贴板内容将不发送"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardControl.Header>
+                            <ui:TextBox x:Name="MaxCharsBox" Width="100"/>
+                        </ui:CardControl>
+
+                        <ui:CardExpander Margin="0,2,0,8" IsExpanded="False">
+                            <ui:CardExpander.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="系统提示词" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="决定 LLM 如何判断和转换"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardExpander.Header>
+                            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+                                <TextBox x:Name="SystemPromptBox"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         FontFamily="Cascadia Code, Consolas"
+                                         FontSize="12"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         Height="160"
+                                         Padding="8"/>
+                            </Border>
+                        </ui:CardExpander>
+
+                        <ui:CardExpander Margin="0,2,0,8" IsExpanded="False">
+                            <ui:CardExpander.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="请求体附加参数" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="JSON 字段，合并到 chat/completions"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardExpander.Header>
+                            <Border Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="6">
+                                <TextBox x:Name="ExtraBodyBox"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         FontFamily="Cascadia Code, Consolas"
+                                         FontSize="12"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         VerticalScrollBarVisibility="Auto"
+                                         Height="100"
+                                         Padding="8"/>
+                            </Border>
+                        </ui:CardExpander>
+
+                        <ui:CardExpander Margin="0,2,0,8" IsExpanded="False">
+                            <ui:CardExpander.Header>
+                                <StackPanel>
+                                    <ui:TextBlock Text="采样参数" FontTypography="BodyStrong" FontSize="13"/>
+                                    <ui:TextBlock Text="Temperature / MaxTokens"
+                                                  Appearance="Secondary"
+                                                  FontTypography="Caption"/>
+                                </StackPanel>
+                            </ui:CardExpander.Header>
+                            <Grid Margin="0,2,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <ui:TextBlock Text="Temperature" Appearance="Secondary" FontTypography="Caption"/>
+                                    <ui:TextBox x:Name="TemperatureBox" Margin="0,3,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <ui:TextBlock Text="Max Tokens" Appearance="Secondary" FontTypography="Caption"/>
+                                    <ui:TextBox x:Name="MaxTokensBox" Margin="0,3,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </ui:CardExpander>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <ui:Button Style="{StaticResource IconButton}"
+                                       Appearance="Secondary"
+                                       Click="OpenLogButton_Click"
+                                       Margin="0,0,6,0"
+                                       ToolTip="打开 debug.log">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="DocumentBulletList24"/>
+                                </ui:Button.Icon>
+                            </ui:Button>
+                            <ui:Button x:Name="TestButton"
+                                       Style="{StaticResource IconButton}"
+                                       Appearance="Secondary"
+                                       Click="TestButton_Click"
+                                       Margin="0,0,6,0"
+                                       ToolTip="测试连接">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="PlugConnected24"/>
+                                </ui:Button.Icon>
+                            </ui:Button>
+                            <ui:Button Style="{StaticResource IconButton}"
+                                       Appearance="Secondary"
+                                       Click="ResetButton_Click"
+                                       Margin="0,0,6,0"
+                                       ToolTip="重置为默认值">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="ArrowReset24"/>
+                                </ui:Button.Icon>
+                            </ui:Button>
+                            <ui:Button Style="{StaticResource IconButton}"
+                                       Appearance="Primary"
+                                       Click="SaveButton_Click"
+                                       ToolTip="保存设置">
+                                <ui:Button.Icon>
+                                    <ui:SymbolIcon Symbol="Save24"/>
+                                </ui:Button.Icon>
+                            </ui:Button>
+                        </StackPanel>
+
+                        <ui:InfoBar x:Name="TestInfoBar"
+                                    Margin="0,8,0,0"
+                                    IsClosable="True"
+                                    IsOpen="False"/>
+
+                        <ui:TextBlock x:Name="PathText"
+                                      Margin="0,8,0,0"
+                                      Appearance="Tertiary"
+                                      FontTypography="Caption"
+                                      TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="3"
+                Background="{DynamicResource ApplicationBackgroundBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="14,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ui:TextBlock x:Name="StatusText"
+                              Text="Ready"
+                              Appearance="Secondary"
+                              FontTypography="Caption"
+                              VerticalAlignment="Center"/>
+                <ui:TextBlock x:Name="HotkeyHintText"
+                              Grid.Column="1"
+                              Appearance="Tertiary"
+                              FontTypography="Caption"
+                              FontFamily="Cascadia Code, Consolas"/>
+            </Grid>
+        </Border>
+    </Grid>
+</ui:FluentWindow>

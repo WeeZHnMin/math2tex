@@ -1,0 +1,33 @@
+# Build outputs
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+# Visual Studio / Rider / VS Code
+.vs/
+.idea/
+.vscode/
+
+# .NET
+*.pdb
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Tests / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Local secrets / runtime artifacts (just in case anyone redirects them)
+debug.log
+backend-settings.json
+history.json
+prompts.json
