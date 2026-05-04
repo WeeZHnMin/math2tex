@@ -31,3 +31,7 @@ debug.log
 backend-settings.json
 history.json
 prompts.json
+
+# Inno Setup output
+installer/
+publish/
