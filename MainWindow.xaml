@@ -43,14 +43,6 @@
             <Setter Property="Margin" Value="0,0,6,0"/>
         </Style>
 
-        <Style x:Key="IconButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-            <Setter Property="Width" Value="36"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="MinHeight" Value="32"/>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -111,15 +103,29 @@
                     </StackPanel>
                 </StackPanel>
 
-                <ui:ToggleSwitch x:Name="AutoConvertSwitch"
-                                 Grid.Column="2"
-                                 IsChecked="True"
-                                 Width="44"
-                                 HorizontalAlignment="Right"
-                                 VerticalAlignment="Center"
-                                 ToolTip="自动转换开关"
-                                 Checked="AutoConvert_Changed"
-                                 Unchecked="AutoConvert_Changed"/>
+                <Border x:Name="AutoConvertChip"
+                        Grid.Column="2"
+                        Background="#FFFFFFFF"
+                        CornerRadius="20"
+                        Padding="12,7"
+                        VerticalAlignment="Center"
+                        Cursor="Hand"
+                        MouseLeftButtonUp="AutoConvertChip_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <Border x:Name="AutoConvertDot"
+                                Width="8" Height="8"
+                                CornerRadius="4"
+                                Background="#10B981"
+                                VerticalAlignment="Center"
+                                Margin="0,0,8,0"/>
+                        <TextBlock x:Name="AutoConvertText"
+                                   Text="已开启"
+                                   Foreground="#111827"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
             </Grid>
         </Border>
 
@@ -162,8 +168,8 @@
                                       VerticalAlignment="Center"
                                       Margin="10,0,8,0"/>
                         <ui:Button Grid.Column="2"
-                                   Style="{StaticResource IconButton}"
                                    Appearance="Secondary"
+                                   Content="清空"
                                    Click="HistoryClear_Click"
                                    ToolTip="清空全部历史">
                             <ui:Button.Icon>
@@ -269,8 +275,8 @@
                                 PlaceholderEnabled="True"/>
 
                     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                        <ui:Button Style="{StaticResource IconButton}"
-                                   Appearance="Secondary"
+                        <ui:Button Appearance="Secondary"
+                                   Content="复制"
                                    Click="HistoryCopy_Click"
                                    ToolTip="复制选中条目的 LaTeX"
                                    Margin="0,0,6,0">
@@ -278,8 +284,8 @@
                                 <ui:SymbolIcon Symbol="Copy24"/>
                             </ui:Button.Icon>
                         </ui:Button>
-                        <ui:Button Style="{StaticResource IconButton}"
-                                   Appearance="Caution"
+                        <ui:Button Appearance="Caution"
+                                   Content="删除"
                                    Click="HistoryDelete_Click"
                                    ToolTip="删除选中条目">
                             <ui:Button.Icon>
@@ -450,8 +456,8 @@
                         </ui:CardExpander>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                            <ui:Button Style="{StaticResource IconButton}"
-                                       Appearance="Secondary"
+                            <ui:Button Appearance="Secondary"
+                                       Content="日志"
                                        Click="OpenLogButton_Click"
                                        Margin="0,0,6,0"
                                        ToolTip="打开 debug.log">
@@ -460,17 +466,17 @@
                                 </ui:Button.Icon>
                             </ui:Button>
                             <ui:Button x:Name="TestButton"
-                                       Style="{StaticResource IconButton}"
                                        Appearance="Secondary"
+                                       Content="测试"
                                        Click="TestButton_Click"
                                        Margin="0,0,6,0"
-                                       ToolTip="测试连接">
+                                       ToolTip="测试 LLM 连接">
                                 <ui:Button.Icon>
                                     <ui:SymbolIcon Symbol="PlugConnected24"/>
                                 </ui:Button.Icon>
                             </ui:Button>
-                            <ui:Button Style="{StaticResource IconButton}"
-                                       Appearance="Secondary"
+                            <ui:Button Appearance="Secondary"
+                                       Content="重置"
                                        Click="ResetButton_Click"
                                        Margin="0,0,6,0"
                                        ToolTip="重置为默认值">
@@ -478,8 +484,8 @@
                                     <ui:SymbolIcon Symbol="ArrowReset24"/>
                                 </ui:Button.Icon>
                             </ui:Button>
-                            <ui:Button Style="{StaticResource IconButton}"
-                                       Appearance="Primary"
+                            <ui:Button Appearance="Primary"
+                                       Content="保存"
                                        Click="SaveButton_Click"
                                        ToolTip="保存设置">
                                 <ui:Button.Icon>

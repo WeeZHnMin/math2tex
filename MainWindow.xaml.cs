@@ -64,7 +64,7 @@ public partial class MainWindow : FluentWindow
 
         _autoConvert = _settings.AutoConvert;
         _maxChars = _settings.AutoConvertMaxChars;
-        AutoConvertSwitch.IsChecked = _autoConvert;
+        UpdateAutoConvertChip();
         UpdateHeroStatus(_autoConvert ? "待命" : "已暂停", _autoConvert ? "#10B981" : "#9CA3AF");
 
         _history = HistoryStore.Load();
@@ -93,16 +93,13 @@ public partial class MainWindow : FluentWindow
         catch { }
     }
 
-    private void AutoConvert_Changed(object sender, RoutedEventArgs e)
+    private void AutoConvertChip_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
-        _autoConvert = AutoConvertSwitch.IsChecked == true;
+        _autoConvert = !_autoConvert;
+        UpdateAutoConvertChip();
         UpdateHeroStatus(_autoConvert ? "待命" : "已暂停", _autoConvert ? "#10B981" : "#9CA3AF");
-
-        // Don't persist until LoadAll has run. XAML's IsChecked="True" fires
-        // this event during InitializeComponent before any settings are loaded.
         if (!_settingsLoaded || _loadingAll) return;
 
-        // Read-modify-write: don't clobber other unsaved field edits.
         try
         {
             var fresh = BackendSettings.Load();
@@ -111,6 +108,15 @@ public partial class MainWindow : FluentWindow
         }
         catch { /* best-effort persistence */ }
         _settings.AutoConvert = _autoConvert;
+    }
+
+    private void UpdateAutoConvertChip()
+    {
+        AutoConvertText.Text = _autoConvert ? "已开启" : "已暂停";
+        var color = _autoConvert
+            ? Color.FromRgb(0x10, 0xB9, 0x81)
+            : Color.FromRgb(0x9C, 0xA3, 0xAF);
+        AutoConvertDot.Background = new SolidColorBrush(color);
     }
 
     // ===== History =====

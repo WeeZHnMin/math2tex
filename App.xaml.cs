@@ -50,10 +50,28 @@ public partial class App : Application
     private void InitTray(MainWindow main)
     {
         var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add("Show", null, (_, _) => main.ShowFromTray());
-        menu.Items.Add("Convert clipboard now", null, async (_, _) => await main.RunClipboardConversionAsync(manual: true));
-        menu.Items.Add("-");
-        menu.Items.Add("Exit", null, (_, _) => RequestExit());
+        menu.Items.Add("打开窗口", null, (_, _) => main.ShowFromTray());
+        menu.Items.Add("立即转换剪贴板", null, async (_, _) => await main.RunClipboardConversionAsync(manual: true));
+        menu.Items.Add(new Forms.ToolStripSeparator());
+
+        var autostartItem = new Forms.ToolStripMenuItem("开机自启动")
+        {
+            CheckOnClick = false,
+            Checked = Autostart.IsEnabled
+        };
+        autostartItem.Click += (_, _) =>
+        {
+            var ok = Autostart.IsEnabled ? Autostart.Disable() : Autostart.Enable();
+            autostartItem.Checked = Autostart.IsEnabled;
+            if (!ok)
+            {
+                ShowTrayBalloon("开机自启动", "操作失败（注册表写入异常）", Forms.ToolTipIcon.Error);
+            }
+        };
+        menu.Items.Add(autostartItem);
+
+        menu.Items.Add(new Forms.ToolStripSeparator());
+        menu.Items.Add("退出", null, (_, _) => RequestExit());
 
         _trayIcon = new Forms.NotifyIcon
         {
