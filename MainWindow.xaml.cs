@@ -567,8 +567,20 @@ public partial class MainWindow : FluentWindow
             catch (Exception ex)
             {
                 DebugLog.Write($"clipboard write failed: {ex.GetType().Name}: {ex.Message}");
+                // Write failed; clipboard may now be empty due to EmptyClipboard
+                // running before SetClipboardData failed. Restore the original
+                // input so the user doesn't lose what they had on the clipboard.
+                try
+                {
+                    await SetClipboardWithRetryAsync(input);
+                    DebugLog.Write("restored original clipboard content after failed write");
+                }
+                catch (Exception ex2)
+                {
+                    DebugLog.Write($"restore also failed: {ex2.GetType().Name}: {ex2.Message}");
+                }
                 UpdateHeroStatus("写入剪贴板失败", "#EF4444");
-                UpdateStatus($"写剪贴板失败: {Truncate(ex.Message, 120)}（已记入历史）");
+                UpdateStatus($"写剪贴板失败: {Truncate(ex.Message, 120)}（已记入历史，原内容已恢复）");
                 if (manual) Notify("无法写入剪贴板", Truncate(ex.Message, 200), Forms.ToolTipIcon.Error);
             }
         }

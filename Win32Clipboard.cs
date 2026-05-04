@@ -8,6 +8,11 @@ namespace Math2Tex;
 /// current thread's input queue to the foreground window's so we get priority
 /// scheduling for OpenClipboard. Does NOT change which window is focused —
 /// AttachThreadInput merges input queues but does not steal foreground.
+///
+/// IMPORTANT ordering: prepare the HGLOBAL fully BEFORE calling OpenClipboard
+/// so that EmptyClipboard never runs unless we are guaranteed to be able to
+/// SetClipboardData immediately after. Otherwise an allocation failure would
+/// leave the user's clipboard cleared with nothing put back.
 /// </summary>
 internal static class Win32Clipboard
 {
@@ -38,9 +43,7 @@ internal static class Win32Clipboard
         try
         {
             if (fgThread != 0 && fgThread != myThread)
-            {
                 attached = AttachThreadInput(myThread, fgThread, true);
-            }
             return TryWriteOnce(text);
         }
         finally
@@ -51,32 +54,40 @@ internal static class Win32Clipboard
 
     private static bool TryWriteOnce(string text)
     {
-        if (!OpenClipboard(IntPtr.Zero)) return false;
+        // 1) Prepare HGLOBAL with the new text BEFORE we touch the clipboard.
+        var bytes = Encoding.Unicode.GetBytes(text);
+        var totalBytes = bytes.Length + 2; // UTF-16 null terminator
 
-        IntPtr hMem = IntPtr.Zero;
+        var hMem = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)totalBytes);
+        if (hMem == IntPtr.Zero) return false;
+
+        var pMem = GlobalLock(hMem);
+        if (pMem == IntPtr.Zero)
+        {
+            GlobalFree(hMem);
+            return false;
+        }
+        try
+        {
+            Marshal.Copy(bytes, 0, pMem, bytes.Length);
+            Marshal.WriteInt16(pMem, bytes.Length, 0);
+        }
+        finally
+        {
+            GlobalUnlock(hMem);
+        }
+
+        // 2) Now open clipboard. Buffer is ready, so empty+set is back-to-back.
+        if (!OpenClipboard(IntPtr.Zero))
+        {
+            GlobalFree(hMem);
+            return false;
+        }
+
         bool ownershipTransferred = false;
         try
         {
             EmptyClipboard();
-
-            var bytes = Encoding.Unicode.GetBytes(text);
-            var totalBytes = bytes.Length + 2; // null terminator (UTF-16)
-
-            hMem = GlobalAlloc(GMEM_MOVEABLE, (UIntPtr)totalBytes);
-            if (hMem == IntPtr.Zero) return false;
-
-            var pMem = GlobalLock(hMem);
-            if (pMem == IntPtr.Zero) return false;
-            try
-            {
-                Marshal.Copy(bytes, 0, pMem, bytes.Length);
-                Marshal.WriteInt16(pMem, bytes.Length, 0);
-            }
-            finally
-            {
-                GlobalUnlock(hMem);
-            }
-
             if (SetClipboardData(CF_UNICODETEXT, hMem) != IntPtr.Zero)
             {
                 ownershipTransferred = true;
@@ -87,7 +98,7 @@ internal static class Win32Clipboard
         finally
         {
             CloseClipboard();
-            if (!ownershipTransferred && hMem != IntPtr.Zero) GlobalFree(hMem);
+            if (!ownershipTransferred) GlobalFree(hMem);
         }
     }
 }
